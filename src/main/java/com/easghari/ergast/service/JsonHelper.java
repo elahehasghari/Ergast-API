@@ -1,9 +1,12 @@
 package com.easghari.ergast.service;
 
+import com.easghari.ergast.score.ScoreSystem;
+import com.easghari.ergast.score.ScoreSystemFactory;
 import com.easghari.ergast.model.ErrorObject;
 import com.easghari.ergast.model.Qualifying;
 import com.easghari.ergast.model.Race;
 import com.easghari.ergast.model.Result;
+import com.easghari.ergast.score.ScoreSystemType;
 import com.easghari.ergast.model.Season;
 import com.easghari.ergast.model.Standing;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -199,6 +202,29 @@ public class JsonHelper {
 
 					return resultList;
 				} else return new ErrorObject(INVALID_ARGUMENT);
+			} else return new ErrorObject(RETURN_EMPTY);
+		} catch (Exception ex) {
+			return new ErrorObject(ex.getMessage());
+		}
+	}
+
+	public static Object getScoresBasedOnScoreSystemFromJson(String jsonString, ScoreSystemType scoreSystemType){
+		objectMapper = new ObjectMapper();
+
+		try {
+
+			JsonNode jsonNode = objectMapper.readTree(jsonString);
+			if (jsonNode.get(MRDATA).get(TOTAL).asInt() > 0) {
+
+				ScoreSystem scoreSystem = ScoreSystemFactory.createScoreSystem(scoreSystemType);
+
+				JsonNode node = jsonNode.get(MRDATA).get(RACE_TABLE).get(RACES);
+				node.forEach(race -> race.get(RESULTS).forEach(result->{
+					int position = result.get(POSITION).asInt();
+					String driver = result.get(DRIVER).get(DRIVER_ID).asText();
+					scoreSystem.addOrUpdateScore(driver, position);
+				}));
+				return scoreSystem.getFinalScoreBoard();
 			} else return new ErrorObject(RETURN_EMPTY);
 		} catch (Exception ex) {
 			return new ErrorObject(ex.getMessage());

@@ -67,6 +67,13 @@ To build and run the project, follow these steps:
 * {season} & {race} should be replaced with appropriate values
 * example: http://localhost:8080/api/v1/season/2012/race/5/results
 
+#### localhost:8080/api/v1/scoresystem/{OLD0309}/{season}
+* By adding the score system {`CURRENT`, `OLD0309`} and the season we can calculate the scores of drivers on that season based on the selected score system
+* example: http://localhost:8080/api/v1/scoresystem/OLD0309/2018
+* example: http://localhost:8080/api/v1/scoresystem/CURRENT/2018
+* PS: OLD0309 refers to the scoring system on years between 2003 and 2009
+* PS2: the score system can be extended to more score systems based on scope
+
 
 note that we are using  spring provided cache to store the responses to prevent extra hits and provide faster response
 you can check this by comparing response time when hitting the same request.

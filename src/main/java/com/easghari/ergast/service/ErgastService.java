@@ -1,6 +1,7 @@
 package com.easghari.ergast.service;
 
 
+import com.easghari.ergast.score.ScoreSystemType;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,6 +17,7 @@ public class ErgastService {
 	private static final String CACHE_FINAL_STANDING_BY_SEASON = "final_standing_by_season";
 	private static final String CACHE_QUALIFYING_FOR_RACE = "qualifying_for_race";
 	private static final String CACHE_RESULT_FOR_RACE = "result_for_race";
+	private static final String CACHE_CURRENT_SCORE_SYSTEM = "current_score_system";
 
 	private final WebClient webClient;
 
@@ -61,6 +63,12 @@ public class ErgastService {
 
 		String responseString = getApiResult(String.format("/%s/%s/results.json", season, race));
 		return JsonHelper.getResultForRaceFromJson(responseString);
+	}
+
+	@Cacheable(CACHE_CURRENT_SCORE_SYSTEM)
+	public Object getScoresWithCurrentScoreSystem(String season, ScoreSystemType scoreSystem){
+		String responseString = getApiResult(String.format("/%s/results.json?limit=400", season));
+		return JsonHelper.getScoresBasedOnScoreSystemFromJson(responseString, scoreSystem);
 	}
 
 	private String getApiResult(String url) {

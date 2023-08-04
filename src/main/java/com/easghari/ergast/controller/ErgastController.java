@@ -1,8 +1,8 @@
 package com.easghari.ergast.controller;
 
+import com.easghari.ergast.score.ScoreSystemType;
 import com.easghari.ergast.service.ErgastService;
 import jdk.jfr.Description;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ErgastController {
 
 
-	@Autowired
-	private ErgastService ergastService;
+	private final ErgastService ergastService;
+
+	public ErgastController(ErgastService ergastService) {
+		this.ergastService = ergastService;
+	}
 
 	@Description("List of seasons")
 	@GetMapping("/seasons")
@@ -50,6 +53,13 @@ public class ErgastController {
 	@GetMapping("/season/{season}/race/{race}/results")
 	public ResponseEntity<Object> getResultOfRace(@PathVariable("season") String season, @PathVariable("race") String race) {
 		Object response = ergastService.getResultForRace(season,race);
+		return ResponseEntity.ok(response);
+	}
+
+	@Description("return results of specific season with current score system ")
+	@GetMapping("/scoresystem/{scoresystem}/{season}")
+	public ResponseEntity<Object> getScoreSystemOfRace(@PathVariable("season") String season, @PathVariable("scoresystem") ScoreSystemType scoreSystem) {
+		Object response = ergastService.getScoresWithCurrentScoreSystem(season, scoreSystem);
 		return ResponseEntity.ok(response);
 	}
 }
